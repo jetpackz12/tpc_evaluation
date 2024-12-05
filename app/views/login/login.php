@@ -60,7 +60,7 @@
       <h4 class="login-box-msg">Student Login</h4>
         <form action="<?php echo ROOT; ?>login" id="frm" method="POST">
           <div class="input-group mb-3">
-            <input type="number" class="form-control" name="identification" placeholder="Student Identification" value="202410020" required>
+            <input type="number" class="form-control" name="identification" placeholder="Student Identification" required>
             <div class="input-group-append">
               <div class="input-group-text bg-light">
                 <span class="fas fa-id-card"></span>
