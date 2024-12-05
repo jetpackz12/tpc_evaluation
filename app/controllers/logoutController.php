@@ -13,7 +13,7 @@ class logoutController extends Controller
 
 	public function index()
 	{
-		if ($_SESSION['name'] && $_SESSION['username']) 
+		if ($_SESSION['name'] && $_SESSION['username'] && $_SESSION['usertype']) 
 		{
 
 			unset($_SESSION['name']);

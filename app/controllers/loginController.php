@@ -62,6 +62,8 @@ class loginController extends Controller
 					]);
 					break;
 			}
+		} elseif (isset($_SESSION['name']) && isset($_SESSION['username']) && isset($_SESSION['usertype'])) {
+			return $this->controller->view()->view_render('admin/dashboard/adminDashboard.php');
 		} else {
 			unset($_SESSION['id']);
 			unset($_SESSION['lastname']);

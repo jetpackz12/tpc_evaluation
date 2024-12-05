@@ -25,12 +25,13 @@
         }
         a:hover {
             text-decoration: underline;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <h1>404 Not Found</h1>
     <p>Sorry, the page you are looking for does not exist.</p>
-    <p><a href="<?php echo ROOT ?>">Return to Home</a></p>
+    <p><a onclick="window.history.back();">Return to Home</a></p>
 </body>
 </html
