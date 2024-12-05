@@ -23,11 +23,22 @@ class route
 			require PATH_CONTROLLER.$filename;
 			$controller = new $class();
 
-			if (isset($arr_url[1]) != ""){
-				$function = $arr_url[1];
-				$controller->$function();
-			}
-			else{
+			try {
+
+				if (isset($arr_url[1]) != ""){
+					$function = $arr_url[1];
+					$controller->$function();
+				}
+				else{
+					$controller->index();
+				}
+
+			} catch (\Throwable $th) {
+				
+				session_destroy();
+
+				require PATH_CONTROLLER.'errorController.php';
+				$controller = new errorController();
 				$controller->index();
 			}
 		} 
