@@ -18,10 +18,26 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><span class="d-none d-sm-inline">List of </span>Questions</h3>
-                                    <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
-                                        <i class="fa fa-plus-square mr-1"></i>
-                                        Add New Question
-                                    </button>
+                                    <div class="float-right d-flex justify-content-center align-items-center">
+                                        <div class="mr-3">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="checkbox" id="activeCheckBox" checked>
+                                                <label for="activeCheckBox">
+                                                    Active Status
+                                                </label>
+                                            </div>
+                                            <div class="icheck-warning d-inline ml-1">
+                                                <input type="checkbox" id="inactiveCheckBox" checked>
+                                                <label for="inactiveCheckBox">
+                                                    Inactive Status
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
+                                            <i class="fa fa-plus-square mr-1"></i>
+                                            Add New Question
+                                        </button>
+                                    </div>
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -37,13 +53,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        <?php $counter = 1; foreach ($data as $result) { ?>
-                                            <tr>
-                                                <td><?php echo $counter++; ?></td>
-                                                <td><?php echo $result['categoryName']; ?></td>
-                                                <td><?php echo $result['modality']; ?></td>
-                                                <td><?php echo $result['question']; ?></td>
-                                                <td><?php echo $result['status'] == 1 ? 'Active' : 'Inactive'; ?></td>
+                                            <?php $counter = 1;
+                                            foreach ($data as $result) { ?>
+                                                <tr>
+                                                    <td><?php echo $counter++; ?></td>
+                                                    <td><?php echo $result['categoryName']; ?></td>
+                                                    <td><?php echo $result['modality']; ?></td>
+                                                    <td><?php echo $result['question']; ?></td>
+                                                    <td><?php echo $result['status'] == 1 ? 'Active' : 'Inactive'; ?></td>
                                                     <td class="d-flex justify-content-center align-items-center">
                                                         <button class="btn btn-primary mr-1 editWithData" data-id="<?php echo $result['id']; ?>" data-toggle="modal" data-target="#modal-edit">
                                                             <i class="fa fa-edit mr-1"></i>
@@ -61,7 +78,7 @@
                                                             </button>
                                                         <?php } ?>
                                                     </td>
-                                            </tr>
+                                                </tr>
                                             <?php } ?>
                                         </tbody>
                                     </table>
@@ -219,26 +236,50 @@
         const tableTitle = "List of Questions";
         const loadingStatus = false;
 
-        $('.editWithData').on('click', function() {
-            const path = '<?php echo ROOT; ?>onlineQuestion/edit';
-            const id = $(this).attr('data-id');
-            $('.id').val(id);
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: path,
-                data: {
-                    id: id
-                },
-                success: function(data) {
-                    
-                    const json = JSON.parse(data);
-                    $('#e_id').val(json['id']);
-                    $('#e_category_name').val(json['category_id']);
-                    $('#e_question').val(json['question']);
+        $(document).ready(function() {
+            $('.editWithData').on('click', function() {
+                const path = '<?php echo ROOT; ?>onlineQuestion/edit';
+                const id = $(this).attr('data-id');
+                $('.id').val(id);
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: path,
+                    data: {
+                        id: id
+                    },
+                    success: function(data) {
 
-                }
+                        const json = JSON.parse(data);
+                        $('#e_id').val(json['id']);
+                        $('#e_category_name').val(json['category_id']);
+                        $('#e_question').val(json['question']);
+
+                    }
+                });
             });
+
+            function filterTable() {
+                const showActive = $('#activeCheckBox').is(':checked');
+                const showInactive = $('#inactiveCheckBox').is(':checked');
+
+                $('#tableActionTools tbody tr').each(function() {
+                    const statusText = $(this).find('td:nth-child(5)').text().toLowerCase();
+
+                    if (
+                        (showActive && statusText === 'active') ||
+                        (showInactive && statusText === 'inactive')
+                    ) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $('#activeCheckBox, #inactiveCheckBox').on('change', filterTable);
+
+            filterTable();
         });
     </script>
 </body>

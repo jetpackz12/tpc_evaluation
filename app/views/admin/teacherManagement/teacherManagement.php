@@ -18,10 +18,26 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><span class="d-none d-sm-inline">List of </span>Instructors</h3>
-                                    <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
-                                        <i class="fa fa-plus-square mr-1"></i>
-                                        Add New Teacher
-                                    </button>
+                                    <div class="float-right d-flex justify-content-center align-items-center">
+                                        <div class="mr-3">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="checkbox" id="activeCheckBox" checked>
+                                                <label for="activeCheckBox">
+                                                    Active Status
+                                                </label>
+                                            </div>
+                                            <div class="icheck-warning d-inline ml-1">
+                                                <input type="checkbox" id="inactiveCheckBox" checked>
+                                                <label for="inactiveCheckBox">
+                                                    Inactive Status
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-success" data-toggle="modal" data-target="#modal-add">
+                                            <i class="fa fa-plus-square mr-1"></i>
+                                            Add New Teacher
+                                        </button>
+                                    </div>
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -33,7 +49,9 @@
                                                 <th>Firstname</th>
                                                 <th>Middlename</th>
                                                 <th>Program</th>
-                                                <th>Status</th>
+                                                <th>
+                                                    Status
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -44,7 +62,7 @@
                                                     <td><?php echo $result['teacherLastname']; ?></td>
                                                     <td><?php echo $result['teacherFirstname']; ?></td>
                                                     <td><?php echo $result['teacherMiddlename']; ?></td>
-                                                    <td><?php echo '( '.$result['program_code'] .' ) - '. $result['program_name']; ?></td>
+                                                    <td><?php echo '( ' . $result['program_code'] . ' ) - ' . $result['program_name']; ?></td>
                                                     <td><?php echo $result['status'] == 1 ? 'Active' : 'Inactive'; ?></td>
                                                     <td class="d-flex justify-content-center align-items-center">
                                                         <button class="btn btn-primary mr-1 editWithData" data-id="<?php echo $result['id']; ?>" data-toggle="modal" data-target="#modal-edit">
@@ -257,30 +275,54 @@
         const tableTitle = "List of Instructors";
         const loadingStatus = false;
 
-        $('.editWithData').on('click', function() {
-            const path = '<?php echo ROOT; ?>teacherManagement/edit';
-            const id = $(this).attr('data-id');
-            $('.id').val(id);
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: path,
-                data: {
-                    id: id
-                },
-                success: function(data) {
-                    
-                    const json = JSON.parse(data);
-                    $('#e_id').val(json['id']);
-                    $('#e_old_teacher_identification').val(json['teacherId']);
-                    $('#e_teacher_id').val(json['teacherId']);
-                    $('#e_lastname').val(json['teacherLastname']);
-                    $('#e_firstname').val(json['teacherFirstname']);
-                    $('#e_middlename').val(json['teacherMiddlename']);
-                    $('#e_program').val(json['program_id']);
+        $(document).ready(function() {
+            $('.editWithData').on('click', function() {
+                const path = '<?php echo ROOT; ?>teacherManagement/edit';
+                const id = $(this).attr('data-id');
+                $('.id').val(id);
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: path,
+                    data: {
+                        id: id
+                    },
+                    success: function(data) {
 
-                }
+                        const json = JSON.parse(data);
+                        $('#e_id').val(json['id']);
+                        $('#e_old_teacher_identification').val(json['teacherId']);
+                        $('#e_teacher_id').val(json['teacherId']);
+                        $('#e_lastname').val(json['teacherLastname']);
+                        $('#e_firstname').val(json['teacherFirstname']);
+                        $('#e_middlename').val(json['teacherMiddlename']);
+                        $('#e_program').val(json['program_id']);
+
+                    }
+                });
             });
+
+            function filterTable() {
+                const showActive = $('#activeCheckBox').is(':checked');
+                const showInactive = $('#inactiveCheckBox').is(':checked');
+
+                $('#tableActionTools tbody tr').each(function() {
+                    const statusText = $(this).find('td:nth-child(6)').text().toLowerCase();
+
+                    if (
+                        (showActive && statusText === 'active') ||
+                        (showInactive && statusText === 'inactive')
+                    ) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $('#activeCheckBox, #inactiveCheckBox').on('change', filterTable);
+
+            filterTable();
         });
     </script>
 </body>

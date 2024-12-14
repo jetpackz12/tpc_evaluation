@@ -18,10 +18,26 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><span class="d-none d-sm-inline">List of </span>Subjects</h3>
-                                    <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
-                                        <i class="fa fa-plus-square mr-1"></i>
-                                        Add New Subject
-                                    </button>
+                                    <div class="float-right d-flex justify-content-center align-items-center">
+                                        <div class="mr-3">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="checkbox" id="activeCheckBox" checked>
+                                                <label for="activeCheckBox">
+                                                    Active Status
+                                                </label>
+                                            </div>
+                                            <div class="icheck-warning d-inline ml-1">
+                                                <input type="checkbox" id="inactiveCheckBox" checked>
+                                                <label for="inactiveCheckBox">
+                                                    Inactive Status
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
+                                            <i class="fa fa-plus-square mr-1"></i>
+                                            Add New Subject
+                                        </button>
+                                    </div>
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -180,8 +196,8 @@
                 <form action="<?php echo ROOT; ?>subjectManagement/update" method="POST" class="postForm">
                     <div class="modal-body">
                         <div class="row">
-                        <input type="text" class="form-control" id="e_id" name="id" hidden>
-                        <input type="text" class="form-control" id="e_old_subject_code" name="old_subject_code" hidden>
+                            <input type="text" class="form-control" id="e_id" name="id" hidden>
+                            <input type="text" class="form-control" id="e_old_subject_code" name="old_subject_code" hidden>
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="e_subject_code">Subject Code</label>
@@ -275,30 +291,54 @@
         const tableTitle = "List of Subjects";
         const loadingStatus = false;
 
-        $('.editWithData').on('click', function() {
-            const path = '<?php echo ROOT; ?>subjectManagement/edit';
-            const id = $(this).attr('data-id');
-            $('.id').val(id);
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: path,
-                data: {
-                    id: id
-                },
-                success: function(data) {
-                    
-                    const json = JSON.parse(data);
-                    $('#e_id').val(json['id']);
-                    $('#e_old_subject_code').val(json['subjectCode']);
-                    $('#e_subject_code').val(json['subjectCode']);
-                    $('#e_subject_name').val(json['subjectName']);
-                    $('#e_semester').val(json['semester_id']);
-                    $('#e_year_level').val(json['year_level_id']);
-                    $('#e_program').val(json['program_id']);
+        $(document).ready(function() {
+            $('.editWithData').on('click', function() {
+                const path = '<?php echo ROOT; ?>subjectManagement/edit';
+                const id = $(this).attr('data-id');
+                $('.id').val(id);
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: path,
+                    data: {
+                        id: id
+                    },
+                    success: function(data) {
 
-                }
+                        const json = JSON.parse(data);
+                        $('#e_id').val(json['id']);
+                        $('#e_old_subject_code').val(json['subjectCode']);
+                        $('#e_subject_code').val(json['subjectCode']);
+                        $('#e_subject_name').val(json['subjectName']);
+                        $('#e_semester').val(json['semester_id']);
+                        $('#e_year_level').val(json['year_level_id']);
+                        $('#e_program').val(json['program_id']);
+
+                    }
+                });
             });
+
+            function filterTable() {
+                const showActive = $('#activeCheckBox').is(':checked');
+                const showInactive = $('#inactiveCheckBox').is(':checked');
+
+                $('#tableActionTools tbody tr').each(function() {
+                    const statusText = $(this).find('td:nth-child(6)').text().toLowerCase();
+
+                    if (
+                        (showActive && statusText === 'active') ||
+                        (showInactive && statusText === 'inactive')
+                    ) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $('#activeCheckBox, #inactiveCheckBox').on('change', filterTable);
+
+            filterTable();
         });
     </script>
 </body>

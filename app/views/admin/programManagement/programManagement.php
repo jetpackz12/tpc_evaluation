@@ -18,10 +18,26 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title"><span class="d-none d-sm-inline">List of </span>Programs</h3>
-                                    <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
-                                        <i class="fa fa-plus-square mr-1"></i>
-                                        Add New Program
-                                    </button>
+                                    <div class="float-right d-flex justify-content-center align-items-center">
+                                        <div class="mr-3">
+                                            <div class="icheck-primary d-inline">
+                                                <input type="checkbox" id="activeCheckBox" checked>
+                                                <label for="activeCheckBox">
+                                                    Active Status
+                                                </label>
+                                            </div>
+                                            <div class="icheck-warning d-inline ml-1">
+                                                <input type="checkbox" id="inactiveCheckBox" checked>
+                                                <label for="inactiveCheckBox">
+                                                    Inactive Status
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-success float-right" data-toggle="modal" data-target="#modal-add">
+                                            <i class="fa fa-plus-square mr-1"></i>
+                                            Add New Program
+                                        </button>
+                                    </div>
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -141,8 +157,8 @@
                 <form action="<?php echo ROOT; ?>programManagement/update" method="POST" class="postForm">
                     <div class="modal-body">
                         <div class="row">
-                        <input type="text" class="form-control" id="e_id" name="id" hidden>
-                        <input type="text" class="form-control" id="e_old_program_code" name="old_program_code" hidden>
+                            <input type="text" class="form-control" id="e_id" name="id" hidden>
+                            <input type="text" class="form-control" id="e_old_program_code" name="old_program_code" hidden>
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="program_code">Program Code</label>
@@ -206,27 +222,51 @@
         const tableTitle = "List of Programs";
         const loadingStatus = false;
 
-        $('.editWithData').on('click', function() {
-            const path = '<?php echo ROOT; ?>programManagement/edit';
-            const id = $(this).attr('data-id');
-            $('.id').val(id);
-            $.ajax({
-                type: "POST",
-                cache: false,
-                url: path,
-                data: {
-                    id: id
-                },
-                success: function(data) {
+        $(document).ready(function() {
+            $('.editWithData').on('click', function() {
+                const path = '<?php echo ROOT; ?>programManagement/edit';
+                const id = $(this).attr('data-id');
+                $('.id').val(id);
+                $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: path,
+                    data: {
+                        id: id
+                    },
+                    success: function(data) {
 
-                    const json = JSON.parse(data);
-                    $('#e_id').val(json['id']);
-                    $('#e_old_program_code').val(json['program_code']);
-                    $('#e_program_code').val(json['program_code']);
-                    $('#e_program_name').val(json['program_name']);
+                        const json = JSON.parse(data);
+                        $('#e_id').val(json['id']);
+                        $('#e_old_program_code').val(json['program_code']);
+                        $('#e_program_code').val(json['program_code']);
+                        $('#e_program_name').val(json['program_name']);
 
-                }
+                    }
+                });
             });
+
+            function filterTable() {
+                const showActive = $('#activeCheckBox').is(':checked');
+                const showInactive = $('#inactiveCheckBox').is(':checked');
+
+                $('#tableActionTools tbody tr').each(function() {
+                    const statusText = $(this).find('td:nth-child(3)').text().toLowerCase();
+
+                    if (
+                        (showActive && statusText === 'active') ||
+                        (showInactive && statusText === 'inactive')
+                    ) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $('#activeCheckBox, #inactiveCheckBox').on('change', filterTable);
+
+            filterTable();
         });
     </script>
 </body>
